@@ -22,7 +22,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "global.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -43,7 +43,6 @@
 TIM_HandleTypeDef htim2;
 
 /* USER CODE BEGIN PV */
-
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -89,17 +88,41 @@ int main(void)
   MX_TIM2_Init();
   MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
-
+  HAL_TIM_Base_Start_IT(&htim2);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1)
-  {
+  	status = INIT;
+//    setTimer(9, 100); // for scan led
+//    setTimer(3, 500); // timer for bliking led 2hz on mode modify
+//    setTimer(1, 1000); // for display 7 seg
+//    setTimer(8, 1000); // signal timer
+//    setTimer(0, 1000); // timer for auto mode
+
+//  	SCH_Init();
+//  	SCH_Add_Task(fsm_automatic_run, 0, 1);
+// SCH_Add_Task(fsm_modify_run, 0, 1);
+//  		SCH_Add_Task(fsm_manual_run, 0, 1);
+// 	SCH_Add_Task(getKeyInput, 0, 1);
+ // 	 SCH_Add_Task(setTimer, 0,1);
+// 	 SCH_Add_Task(timerRun, 0, 1);
+// 	 SCH_Add_Task(display, 0, 1);
+
+    while (1)
+    {
+    	if(timers[8].flag == 1){
+    			HAL_GPIO_TogglePin(SIGNAL_TIMER_GPIO_Port, SIGNAL_TIMER_Pin);
+    			setTimer(8, 1000);
+    	}
+  	  fsm_automatic_run();
+ 	  fsm_modify_run();
+ 	  fsm_manual_run();
+//    	SCH_Dispatch_Tasks();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-  }
+    }
   /* USER CODE END 3 */
 }
 
@@ -240,7 +263,11 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
+	timerRun();
+	getKeyInput();
+// SCH_Update();
+}
 /* USER CODE END 4 */
 
 /**
